@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Ajuste a URL base conforme o seu backend Spring Boot
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: 'https://rayanefigueiraagendamentos.onrender.com',
 });
 
 export const agendamentoService = {

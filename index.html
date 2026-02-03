@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./src/assets/logorf.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>rayanefigueira</title>
+    <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+    theme: {
+  extend: {
+    colors: {
+      // Sua paleta Rose (Mantenha ou use esta refinada)
+      rose: {
+        50: '#fff1f2',
+        100: '#ffe4e6',
+        200: '#fecdd3',
+        300: '#fda4af',
+        400: '#fb7185',
+        500: '#f43f5e',
+        600: '#e11d48',
+      },
+      // Tons Escuros Complementares
+      dark: {
+        900: '#0f172a', // Azul escuro quase preto para o fundo (background)
+        800: '#1e293b', // Cinza azulado para Cards
+        700: '#334155', // Para bordas e divisores
+      },
+      // Accent (Dourado/Champanhe para luxo, opcional)
+      gold: '#d4af37',
+    }
+  }
+}
+    }
+  </script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

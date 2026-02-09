@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Trash2, Calendar } from 'lucide-react';
+import { Lock, Trash2, Calendar, Phone, DollarSign } from 'lucide-react';
 
 // Import de Serviços
 import { agendamentoService, authService } from '../../services/api';
@@ -20,7 +20,6 @@ const AdminView = ({ onLogout }) => {
   const [agendamentos, setAgendamentos] = useState([]);
   const [dataAgenda, setDataAgenda] = useState(getHoje());
 
-  // Carrega a agenda sempre que a data mudar ou o login for efetuado
   useEffect(() => { 
     if (isLogged) buscarAgendamentos(); 
   }, [dataAgenda, isLogged]);
@@ -29,7 +28,6 @@ const AdminView = ({ onLogout }) => {
     setLoading(true);
     try {
       const res = await agendamentoService.listar(dataAgenda);
-      // Ordena por horário (08:00 antes de 09:00, etc)
       const ordenados = (res.data || []).sort((a, b) => a.horario.localeCompare(b.horario));
       setAgendamentos(ordenados);
     } catch (error) { 
@@ -52,18 +50,34 @@ const AdminView = ({ onLogout }) => {
     }
   };
 
+  // Função atualizada para disparar DELETE /agendamentos/{id}
   const handleCancelar = async (id) => {
-    if (window.confirm("Deseja realmente cancelar este agendamento?")) {
+    if (window.confirm("Deseja realmente excluir permanentemente este agendamento?")) {
+      setLoading(true);
       try {
-        await agendamentoService.cancelar(id);
-        buscarAgendamentos(); // Atualiza a lista
+        // Certifique-se que agendamentoService.cancelar faz o DELETE para a URL correta
+        await agendamentoService.cancelar(id); 
+        
+        // Remove localmente do estado para resposta imediata na UI
+        setAgendamentos(prev => prev.filter(ag => ag.id !== id));
+        
+        alert("Agendamento excluído com sucesso.");
       } catch (error) {
-        alert("Erro ao cancelar agendamento.");
+        console.error("Erro ao deletar:", error);
+        alert("Erro ao excluir agendamento. Tente novamente.");
+        // Recarrega caso ocorra erro para sincronizar estado
+        buscarAgendamentos();
+      } finally {
+        setLoading(false);
       }
     }
   };
 
-  // --- ESTADO: LOGIN ---
+  const formatarMoeda = (valor) => {
+    if (valor === null || valor === undefined) return "0,00";
+    return String(valor).replace('.', ',');
+  };
+
   if (!isLogged) {
     return (
       <div className="max-w-sm mx-auto mt-10 px-4 text-center">
@@ -91,34 +105,27 @@ const AdminView = ({ onLogout }) => {
               {loading ? "Autenticando..." : "Entrar"}
             </Button>
           </form>
-          
-          <button 
-            onClick={onLogout} 
-            className="mt-6 text-xs text-gray-400 hover:text-rose-400 transition-colors"
-          >
-            Voltar ao site
-          </button>
+          <button onClick={onLogout} className="mt-6 text-xs text-gray-400">Voltar ao site</button>
         </Card>
       </div>
     );
   }
 
-  // --- ESTADO: PAINEL ADMINISTRATIVO ---
   return (
-    <div className="max-w-4xl mx-auto pb-20 px-2">
-      <div className="flex justify-between items-center mb-6">
+    <div className="max-w-4xl mx-auto pb-20 px-4 mt-6">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-2xl font-serif text-rose-900">Agenda Diária</h2>
-          <p className="text-xs text-gray-400">Gerenciamento de horários</p>
+          <h2 className="text-3xl font-serif text-rose-900">Agenda da Rayane</h2>
+          <p className="text-sm text-gray-500">Controle financeiro e de horários</p>
         </div>
-        <Button variant="ghost" onClick={() => setIsLogged(false)} className="border border-rose-100">
+        <Button variant="outline" onClick={() => setIsLogged(false)} className="border-rose-200 text-rose-700">
           Sair
         </Button>
       </div>
 
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-rose-100 mb-6">
-        <label className="text-xs font-bold text-rose-300 uppercase mb-2 block ml-1">
-          Filtrar por data
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-rose-100 mb-8">
+        <label className="text-xs font-bold text-rose-400 uppercase mb-2 block">
+          Visualizar Dia
         </label>
         <Input 
           type="date" 
@@ -127,46 +134,71 @@ const AdminView = ({ onLogout }) => {
         />
       </div>
 
-      {loading ? (
+      {loading && agendamentos.length === 0 ? (
         <div className="text-center py-20">
           <div className="animate-spin w-8 h-8 border-4 border-rose-400 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-rose-300 text-sm">Buscando agendamentos...</p>
+          <p className="text-rose-300">Carregando dados...</p>
         </div>
       ) : (
         <div className="grid gap-4">
           {agendamentos.map(item => (
             <div 
               key={item.id} 
-              className="bg-white p-4 rounded-xl border-l-4 border-rose-400 flex justify-between items-center shadow-sm hover:shadow-md transition-shadow"
+              className={`bg-white p-5 rounded-2xl border-l-8 flex flex-col md:flex-row justify-between items-start md:items-center shadow-sm transition-all border-rose-400`}
             >
-              <div className="flex items-center gap-4">
-                <div className="bg-rose-50 p-2 rounded text-center min-w-[60px]">
-                  <span className="font-bold text-rose-600 block text-sm">
-                    {item.horario.substring(0, 5)}
+              <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 w-full">
+                <div className="bg-rose-50 p-3 rounded-xl text-center min-w-[75px]">
+                  <span className="font-bold text-rose-600 block text-lg">
+                    {item.horario?.substring(0, 5)}
                   </span>
                 </div>
-                <div>
-                  <span className="text-gray-800 font-medium block">{item.nome}</span>
-                  <span className="text-[10px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-bold uppercase">
-                    {item.servico}
-                  </span>
+
+                <div className="space-y-2 flex-grow">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-gray-900 font-bold text-lg">{item.nome}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-green-100 text-green-700">
+                      Agendado
+                    </span>
+                    
+                    {item.valorPix && (
+                      <span className="flex items-center gap-1 text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold uppercase">
+                        <DollarSign size={10} /> Valor : R$ {formatarMoeda(item.valorPix)}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-3 items-center text-sm text-gray-600">
+                    <span className="bg-rose-100 text-rose-700 px-3 py-1 rounded-lg font-medium">
+                      {item.servico}
+                    </span>
+                    <a 
+                      href={`https://wa.me/55${item.numeroCliente?.replace(/\D/g, '')}`} 
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1 text-green-600 hover:underline font-medium"
+                    >
+                      <Phone size={14} /> {item.numeroCliente || 'Sem telefone'}
+                    </a>
+                  </div>
                 </div>
               </div>
               
-              <button 
-                onClick={() => handleCancelar(item.id)} 
-                className="text-red-300 hover:text-red-500 p-2 transition-colors"
-                title="Cancelar agendamento"
-              >
-                <Trash2 size={20}/>
-              </button>
+              <div className="flex items-center gap-2 mt-4 md:mt-0 ml-auto md:ml-0">
+                  <button 
+                    onClick={() => handleCancelar(item.id)} 
+                    className="text-red-200 hover:text-red-600 p-3 transition-colors hover:bg-red-50 rounded-full"
+                    disabled={loading}
+                  >
+                    <Trash2 size={22}/>
+                  </button>
+              </div>
             </div>
           ))}
 
-          {agendamentos.length === 0 && (
-            <div className="text-center py-16 bg-white rounded-xl border-2 border-dashed border-rose-100">
-              <Calendar size={40} className="mx-auto text-rose-100 mb-4" />
-              <p className="text-gray-400">Nenhum agendamento encontrado para este dia.</p>
+          {agendamentos.length === 0 && !loading && (
+            <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-rose-100">
+              <Calendar size={48} className="mx-auto text-rose-100 mb-4" />
+              <p className="text-gray-400 font-medium">Nenhum agendamento para este dia.</p>
             </div>
           )}
         </div>

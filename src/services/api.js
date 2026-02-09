@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Ajuste a URL base conforme o seu backend Spring Boot
 const api = axios.create({
-  baseURL: 'https://rayanefigueiraagendamentos.onrender.com',
+  baseURL: 'https://rayanefigueiraagendamentos.onrender.com', // Exemplo de URL base
 });
 
 export const agendamentoService = {

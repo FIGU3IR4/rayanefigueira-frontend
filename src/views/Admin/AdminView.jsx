@@ -50,22 +50,16 @@ const AdminView = ({ onLogout }) => {
     }
   };
 
-  // Função atualizada para disparar DELETE /agendamentos/{id}
   const handleCancelar = async (id) => {
     if (window.confirm("Deseja realmente excluir permanentemente este agendamento?")) {
       setLoading(true);
       try {
-        // Certifique-se que agendamentoService.cancelar faz o DELETE para a URL correta
         await agendamentoService.cancelar(id); 
-        
-        // Remove localmente do estado para resposta imediata na UI
         setAgendamentos(prev => prev.filter(ag => ag.id !== id));
-        
         alert("Agendamento excluído com sucesso.");
       } catch (error) {
         console.error("Erro ao deletar:", error);
         alert("Erro ao excluir agendamento. Tente novamente.");
-        // Recarrega caso ocorra erro para sincronizar estado
         buscarAgendamentos();
       } finally {
         setLoading(false);
@@ -78,21 +72,23 @@ const AdminView = ({ onLogout }) => {
     return String(valor).replace('.', ',');
   };
 
+  // TELA DE LOGIN ADMIN
   if (!isLogged) {
     return (
-      <div className="max-w-sm mx-auto mt-10 px-4 text-center">
-        <Card className="shadow-xl">
-          <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-500">
+      <div className="max-w-sm mx-auto mt-20 px-4 text-center">
+        <Card className="shadow-2xl bg-neutral-900 border-neutral-800">
+          <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4 text-white border border-neutral-700">
             <Lock size={24} />
           </div>
-          <h2 className="text-xl font-serif mb-6 text-gray-800">Acesso Restrito</h2>
+          <h2 className="text-xl font-serif mb-6 text-white uppercase tracking-widest">Login ADM</h2>
           
           <form onSubmit={handleLogin} className="space-y-4 text-left">
             <Input 
               label="Usuário" 
               value={userName} 
               onChange={e => setUserName(e.target.value)} 
-              placeholder="Seu usuário" 
+              placeholder="Digite seu usuário" 
+              className="bg-neutral-800 border-neutral-700 text-white"
             />
             <Input 
               label="Senha" 
@@ -100,105 +96,111 @@ const AdminView = ({ onLogout }) => {
               value={senha} 
               onChange={e => setSenha(e.target.value)} 
               placeholder="Sua senha" 
+              className="bg-neutral-800 border-neutral-700 text-white"
             />
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full bg-white text-black hover:bg-neutral-200 py-4 font-bold" disabled={loading}>
               {loading ? "Autenticando..." : "Entrar"}
             </Button>
           </form>
-          <button onClick={onLogout} className="mt-6 text-xs text-gray-400">Voltar ao site</button>
+          <button onClick={onLogout} className="mt-8 text-xs text-neutral-500 hover:text-white transition-colors">
+            Voltar ao site
+          </button>
         </Card>
       </div>
     );
   }
 
+  // TELA DE AGENDA LOGADA
   return (
-    <div className="max-w-4xl mx-auto pb-20 px-4 mt-6">
-      <div className="flex justify-between items-center mb-8">
+    <div className="max-w-4xl mx-auto pb-20 px-4 mt-6 text-white">
+      <div className="flex justify-between items-center mb-10">
         <div>
-          <h2 className="text-3xl font-serif text-rose-900">Agenda da Rayane</h2>
-          <p className="text-sm text-gray-500">Controle financeiro e de horários</p>
+          <h2 className="text-3xl font-serif text-white tracking-wide">Agenda Rayane</h2>
+          <p className="text-sm text-neutral-500 uppercase tracking-widest mt-1">Gestão Profissional</p>
         </div>
-        <Button variant="outline" onClick={() => setIsLogged(false)} className="border-rose-200 text-rose-700">
+        <Button variant="outline" onClick={() => setIsLogged(false)} className="border-neutral-700 text-neutral-300 hover:bg-neutral-800">
           Sair
         </Button>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-rose-100 mb-8">
-        <label className="text-xs font-bold text-rose-400 uppercase mb-2 block">
-          Visualizar Dia
+      <div className="bg-neutral-900 p-6 rounded-2xl shadow-xl border border-neutral-800 mb-8">
+        <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3 block">
+          Selecione a Data para Visualizar
         </label>
         <Input 
           type="date" 
           value={dataAgenda} 
           onChange={(e) => setDataAgenda(e.target.value)} 
+          className="bg-neutral-800 border-neutral-700 text-white"
         />
       </div>
 
       {loading && agendamentos.length === 0 ? (
         <div className="text-center py-20">
-          <div className="animate-spin w-8 h-8 border-4 border-rose-400 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-rose-300">Carregando dados...</p>
+          <div className="animate-spin w-10 h-10 border-4 border-neutral-700 border-t-white rounded-full mx-auto mb-4"></div>
+          <p className="text-neutral-500 font-medium">Buscando horários...</p>
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-5">
           {agendamentos.map(item => (
             <div 
               key={item.id} 
-              className={`bg-white p-5 rounded-2xl border-l-8 flex flex-col md:flex-row justify-between items-start md:items-center shadow-sm transition-all border-rose-400`}
+              className="bg-neutral-900 p-5 rounded-2xl border border-neutral-800 flex flex-col md:flex-row justify-between items-start md:items-center shadow-lg transition-all hover:border-neutral-600"
             >
               <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 w-full">
-                <div className="bg-rose-50 p-3 rounded-xl text-center min-w-[75px]">
-                  <span className="font-bold text-rose-600 block text-lg">
+                <div className="bg-neutral-800 p-3 rounded-xl text-center min-w-[85px] border border-neutral-700">
+                  <span className="font-bold text-white block text-lg">
                     {item.horario?.substring(0, 5)}
                   </span>
                 </div>
 
                 <div className="space-y-2 flex-grow">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-gray-900 font-bold text-lg">{item.nome}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-green-100 text-green-700">
-                      Agendado
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-white font-bold text-lg tracking-wide">{item.nome}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-neutral-800 text-neutral-400 border border-neutral-700">
+                      Confirmado
                     </span>
                     
                     {item.valorPix && (
-                      <span className="flex items-center gap-1 text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold uppercase">
-                        <DollarSign size={10} /> Valor : R$ {formatarMoeda(item.valorPix)}
+                      <span className="flex items-center gap-1 text-[10px] bg-green-900/20 text-green-400 border border-green-900/50 px-2 py-0.5 rounded-full font-bold uppercase">
+                        <DollarSign size={10} /> Sinal: R$ {formatarMoeda(item.valorPix)}
                       </span>
                     )}
                   </div>
                   
-                  <div className="flex flex-wrap gap-3 items-center text-sm text-gray-600">
-                    <span className="bg-rose-100 text-rose-700 px-3 py-1 rounded-lg font-medium">
+                  <div className="flex flex-wrap gap-4 items-center text-sm">
+                    <span className="text-neutral-300 font-medium bg-neutral-800 px-3 py-1 rounded-lg">
                       {item.servico}
                     </span>
                     <a 
                       href={`https://wa.me/55${item.numeroCliente?.replace(/\D/g, '')}`} 
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-1 text-green-600 hover:underline font-medium"
+                      className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors"
                     >
-                      <Phone size={14} /> {item.numeroCliente || 'Sem telefone'}
+                      <Phone size={14} /> <span className="underline decoration-neutral-700">{item.numeroCliente || 'Sem telefone'}</span>
                     </a>
                   </div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-2 mt-4 md:mt-0 ml-auto md:ml-0">
+              <div className="flex items-center gap-2 mt-5 md:mt-0 ml-auto md:ml-4">
                   <button 
                     onClick={() => handleCancelar(item.id)} 
-                    className="text-red-200 hover:text-red-600 p-3 transition-colors hover:bg-red-50 rounded-full"
+                    className="text-neutral-600 hover:text-red-500 p-3 transition-all hover:bg-red-500/10 rounded-xl border border-transparent hover:border-red-500/20"
                     disabled={loading}
+                    title="Excluir agendamento"
                   >
-                    <Trash2 size={22}/>
+                    <Trash2 size={20}/>
                   </button>
               </div>
             </div>
           ))}
 
           {agendamentos.length === 0 && !loading && (
-            <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-rose-100">
-              <Calendar size={48} className="mx-auto text-rose-100 mb-4" />
-              <p className="text-gray-400 font-medium">Nenhum agendamento para este dia.</p>
+            <div className="text-center py-24 bg-neutral-900 rounded-3xl border border-dashed border-neutral-800">
+              <Calendar size={48} className="mx-auto text-neutral-800 mb-4" />
+              <p className="text-neutral-600 font-medium">Nenhum agendamento encontrado.</p>
             </div>
           )}
         </div>

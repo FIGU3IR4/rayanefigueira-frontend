@@ -1,12 +1,12 @@
 import React from 'react';
 
 const Button = ({ children, onClick, variant = 'primary', className = '', disabled = false, type = "button" }) => {
-  const baseStyle = "px-4 py-3 sm:py-2 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto flex justify-center items-center gap-2 active:scale-95 touch-manipulation";
+  const baseStyle = "px-4 py-3 rounded-xl font-bold transition-all duration-200 disabled:opacity-50 flex justify-center items-center gap-2 active:scale-95";
   const variants = {
-    primary: "bg-rose-400 text-white hover:bg-rose-500 shadow-md",
-    outline: "border-2 border-rose-300 text-rose-400 hover:bg-rose-50",
-    danger: "bg-red-50 text-red-500 hover:bg-red-100",
-    ghost: "text-gray-500 hover:text-rose-400 bg-transparent"
+    primary: "bg-white text-black hover:bg-neutral-200 shadow-lg", // Botão branco com texto preto (Chique)
+    outline: "border-2 border-neutral-700 text-white hover:bg-neutral-800",
+    danger: "bg-red-900/20 text-red-500 hover:bg-red-900/40 border border-red-900/50",
+    ghost: "text-neutral-500 hover:text-white bg-transparent"
   };
   return (
     <button type={type} onClick={onClick} disabled={disabled} className={`${baseStyle} ${variants[variant]} ${className}`}>

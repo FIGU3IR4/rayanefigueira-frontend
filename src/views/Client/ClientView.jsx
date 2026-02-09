@@ -16,7 +16,7 @@ import { HORARIOS_DISPONIVEIS, SERVICOS } from '../../constants/config';
 
 const QR_CODE_PIX_URL = pix;
 const WHATSAPP_NUMBER = '5581995920432'; 
-const CHAVE_PIX = 'jessicarayane.tpc@gmail.com'; // Sua chave definida
+const CHAVE_PIX = 'jessicarayane.tpc@gmail.com'; 
 
 const ClientView = ({ onNavigateAdmin }) => {
   const [dataSelecionada, setDataSelecionada] = useState(getHoje());
@@ -29,7 +29,7 @@ const ClientView = ({ onNavigateAdmin }) => {
   const [feedback, setFeedback] = useState({ type: '', msg: '' });
   const [showPixModal, setShowPixModal] = useState(false);
   const [valorMetadeServico, setValorMetadeServico] = useState(0);
-  const [copiado, setCopiado] = useState(false); // Estado para o feedback de cópia
+  const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
     carregarHorarios();
@@ -69,9 +69,7 @@ const ClientView = ({ onNavigateAdmin }) => {
     if (!nome || !horarioSelecionado || !servicoSelecionado || !numeroCliente) {
       return alert("Preencha todos os campos antes de continuar.");
     }
-
     const servicoDetalhes = SERVICOS.find(s => s.nome === servicoSelecionado);
-
     if (servicoDetalhes) {
       const precoNumerico = parseFloat(servicoDetalhes.preco.replace("R$", "").replace(".", "").replace(",", ".").trim());
       const metade = precoNumerico / 2;
@@ -106,7 +104,6 @@ const ClientView = ({ onNavigateAdmin }) => {
       setHorarioSelecionado(null);
       setShowPixModal(false);
       carregarHorarios();
-
     } catch (error) { 
       setFeedback({ type: 'error', msg: 'Erro ao agendar. Tente novamente.' }); 
     } finally { 
@@ -116,23 +113,26 @@ const ClientView = ({ onNavigateAdmin }) => {
   };
 
   return (
-    <div className="max-w-md mx-auto w-full pb-10">
-      <div className="text-center mb-6 px-4">
-        <h2 className="text-2xl font-serif text-rose-900 mb-2">Agende seu Horário</h2>
-        <p className="text-gray-500 text-sm">Realce sua beleza com Rayane Figueira</p>
+    <div className="max-w-md mx-auto w-full pb-10 min-h-screen bg-neutral-950 text-neutral-100">
+      <div className="text-center py-8 px-4">
+        <h2 className="text-3xl font-serif text-white mb-2 tracking-wide">Agende seu Horário</h2>
+        <p className="text-neutral-500 text-sm uppercase tracking-widest">Rayane Figueira | Lash Designer</p>
       </div>
 
-      <Card className="mb-6 mx-2 shadow-lg shadow-rose-100">
-        <Input 
-          label="Escolha a data" 
-          type="date" 
-          value={dataSelecionada} 
-          min={getHoje()} 
-          onChange={(e) => setDataSelecionada(e.target.value)} 
-        />
+      <Card className="mb-6 mx-2 bg-neutral-900 border-neutral-800 shadow-2xl">
+        <div className="p-1">
+          <Input 
+            label="Escolha a data" 
+            type="date" 
+            value={dataSelecionada} 
+            min={getHoje()} 
+            onChange={(e) => setDataSelecionada(e.target.value)}
+            className="bg-neutral-800 border-neutral-700 text-white focus:ring-neutral-600"
+          />
+        </div>
         
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-600 mb-2 ml-1">
+        <div className="mb-6 mt-4 px-1">
+          <label className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-3 ml-1">
             Horários Disponíveis
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -145,12 +145,12 @@ const ClientView = ({ onNavigateAdmin }) => {
                   key={h} 
                   disabled={estaOcupado || loading}
                   onClick={() => setHorarioSelecionado(h)}
-                  className={`py-3 rounded-lg text-sm font-medium transition-all 
+                  className={`py-3 rounded-lg text-sm font-medium transition-all duration-300
                     ${estaOcupado 
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                      ? 'bg-neutral-800/50 text-neutral-600 cursor-not-allowed border border-transparent' 
                       : estaSelecionado 
-                        ? 'bg-rose-500 text-white scale-105 shadow-md' 
-                        : 'bg-white border border-rose-200 text-rose-900 hover:bg-rose-50'
+                        ? 'bg-white text-black scale-105 shadow-[0_0_15px_rgba(255,255,255,0.3)]' 
+                        : 'bg-neutral-800 border border-neutral-700 text-neutral-300 hover:border-neutral-500 hover:bg-neutral-700'
                     }`}
                 >
                   {h}
@@ -161,17 +161,17 @@ const ClientView = ({ onNavigateAdmin }) => {
         </div>
 
         {horarioSelecionado && (
-          <div className="space-y-4 pt-2 border-t border-rose-50 animate-in fade-in slide-in-from-top-2">
+          <div className="space-y-4 pt-4 border-t border-neutral-800 animate-in fade-in slide-in-from-top-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1 ml-1">Serviço</label>
+              <label className="block text-xs font-semibold text-neutral-400 uppercase mb-2 ml-1">Serviço</label>
               <select 
                 value={servicoSelecionado} 
                 onChange={(e) => setServicoSelecionado(e.target.value)} 
-                className="w-full px-4 py-3 border border-rose-200 rounded-lg bg-rose-50/30 text-gray-700 outline-none focus:ring-2 focus:ring-rose-300 transition-all"
+                className="w-full px-4 py-3 border border-neutral-700 rounded-lg bg-neutral-800 text-neutral-200 outline-none focus:ring-2 focus:ring-neutral-600 transition-all appearance-none"
               >
-                <option value="">Selecione o serviço...</option>
+                <option value="" className="bg-neutral-900">Selecione o serviço...</option>
                 {SERVICOS.map((s) => (
-                  <option key={s.nome} value={s.nome}>
+                  <option key={s.nome} value={s.nome} className="bg-neutral-900">
                     {s.nome} — {s.preco}
                   </option>
                 ))}
@@ -183,6 +183,7 @@ const ClientView = ({ onNavigateAdmin }) => {
               value={nome} 
               onChange={(e) => setNome(e.target.value)} 
               placeholder="Digite seu nome"
+              className="bg-neutral-800 border-neutral-700 text-white"
             />
 
             <Input 
@@ -191,19 +192,24 @@ const ClientView = ({ onNavigateAdmin }) => {
               onChange={handlePhoneChange} 
               placeholder="(00) 00000-0000"
               type="tel"
+              className="bg-neutral-800 border-neutral-700 text-white"
             />
 
-            <Button onClick={handleVerificarPagamento} disabled={loading} className="w-full">
+            <Button 
+              onClick={handleVerificarPagamento} 
+              disabled={loading} 
+              className="w-full bg-white hover:bg-neutral-200 text-black font-bold py-4 rounded-xl transition-all"
+            >
               <CreditCard size={20} className="mr-2 inline" /> {loading ? 'Carregando...' : 'Pagar Reserva (50%)'}
             </Button>
           </div>
         )}
 
         {feedback.msg && (
-          <div className={`mt-4 p-3 rounded-lg text-sm text-center ${
+          <div className={`mt-4 p-3 rounded-lg text-sm text-center border ${
             feedback.type === 'success' 
-              ? 'bg-green-50 text-green-800 border border-green-200' 
-              : 'bg-red-50 text-red-800 border border-red-200'
+              ? 'bg-green-900/20 text-green-400 border-green-800' 
+              : 'bg-red-900/20 text-red-400 border-red-800'
           }`}>
             {feedback.msg}
           </div>
@@ -211,51 +217,55 @@ const ClientView = ({ onNavigateAdmin }) => {
       </Card>
 
       {showPixModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="max-w-xs w-full p-6 text-center shadow-2xl bg-white">
-            <h3 className="text-xl font-serif text-rose-900 mb-4">Pagamento PIX</h3>
-            <p className="text-lg font-bold text-rose-700 mb-2">Valor: R$ {valorMetadeServico.toFixed(2).replace('.', ',')}</p>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <Card className="max-w-xs w-full p-6 text-center shadow-2xl bg-neutral-900 border-neutral-800">
+            <h3 className="text-xl font-serif text-white mb-4">Pagamento PIX</h3>
+            <p className="text-2xl font-bold text-white mb-2">R$ {valorMetadeServico.toFixed(2).replace('.', ',')}</p>
             
-            <img 
-              src={QR_CODE_PIX_URL} 
-              alt="QR Code" 
-              className="w-40 h-40 mx-auto mb-4 border p-2 rounded-lg"
-            />
+            <div className="bg-white p-3 rounded-xl inline-block mb-4 shadow-lg">
+              <img 
+                src={QR_CODE_PIX_URL} 
+                alt="QR Code" 
+                className="w-40 h-40 mx-auto"
+              />
+            </div>
 
-            {/* Seção Copia e Cola */}
             <div className="mb-6">
-              <p className="text-xs text-gray-400 mb-1">Chave PIX (E-mail):</p>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-widest mb-2">Chave PIX (E-mail)</p>
               <div 
                 onClick={handleCopyPix}
-                className="flex items-center justify-between gap-2 p-2 bg-gray-50 border border-dashed border-rose-200 rounded cursor-pointer hover:bg-rose-50 transition-colors"
+                className="flex items-center justify-between gap-2 p-3 bg-neutral-800 border border-neutral-700 rounded-lg cursor-pointer hover:bg-neutral-700 transition-colors"
               >
-                <span className="text-[10px] text-gray-600 truncate font-mono">
+                <span className="text-[10px] text-neutral-300 truncate font-mono">
                   {CHAVE_PIX}
                 </span>
-                {copiado ? <Check size={14} className="text-green-500" /> : <Copy size={14} className="text-rose-300" />}
+                {copiado ? <Check size={14} className="text-green-500" /> : <Copy size={14} className="text-neutral-500" />}
               </div>
-              {copiado && <span className="text-[10px] text-green-600 font-bold mt-1 block">Chave copiada!</span>}
+              {copiado && <span className="text-[10px] text-green-500 font-bold mt-2 block">Copiado com sucesso!</span>}
             </div>
             
             <Button 
               onClick={handleFinalizarAgendamento} 
-              className="w-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-2"
+              className="w-full bg-green-600 hover:bg-green-700 text-white flex items-center justify-center gap-2 py-4 rounded-xl"
             >
-              <MessageCircle size={20} /> Já paguei, avisar no Whats
+              <MessageCircle size={20} /> Confirmar no WhatsApp
             </Button>
             
             <button 
               onClick={() => setShowPixModal(false)} 
-              className="mt-4 text-xs text-gray-400 hover:underline"
+              className="mt-6 text-xs text-neutral-500 hover:text-white transition-colors"
             >
-              Cancelar
+              Voltar ao agendamento
             </button>
           </Card>
         </div>
       )}
 
-      <button onClick={onNavigateAdmin} className="text-sm text-rose-300 flex items-center justify-center gap-2 mx-auto p-4">
-        <Lock size={14} /> Área da Profissional
+      <button 
+        onClick={onNavigateAdmin} 
+        className="text-xs text-neutral-600 hover:text-neutral-400 flex items-center justify-center gap-2 mx-auto p-8 transition-colors"
+      >
+        <Lock size={12} /> Acesso Restrito
       </button>
     </div>
   );
